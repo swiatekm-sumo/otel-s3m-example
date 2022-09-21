@@ -1,0 +1,22 @@
+receivers:
+  ## Configuration for MySQL Receiver
+  ## The MySQL receiver queries MySQL's global status and InnoDB tables.
+  ## ref: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/mysqlreceiver
+  mysql:
+    endpoint: mysql:3306
+    username: otel
+    password: $MYSQL_PASSWORD
+    collection_interval: 10s
+
+service:
+  pipelines:
+    metrics/mysql:
+      receivers:
+        - mysql
+      processors:
+        - memory_limiter
+        - sumologic_schema
+        - transform/add_sourcetype
+        - batch
+      exporters:
+        - sumologic

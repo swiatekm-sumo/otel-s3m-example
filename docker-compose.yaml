@@ -1,0 +1,30 @@
+services:
+  otel:
+    image: public.ecr.aws/sumologic/sumologic-otel-collector-dev
+    environment:
+      - FILE_STORAGE=/tmp
+      - INSTALL_TOKEN=${INSTALL_TOKEN}
+      - COLLECTOR_NAME=${COLLECTOR_NAME:-otel-s3m-example}
+      - MYSQL_PASSWORD=otel
+    volumes:
+      - .:/etc/otel
+    command:
+      - --config
+      - /etc/otel/common.yaml
+      - --config
+      - 'glob:/etc/otel/integrations/*'
+    depends_on:
+      - mysql
+      - apache
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_USER=otel
+      - MYSQL_PASSWORD=otel
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_ROOT_HOST=0.0.0.0
+  apache:
+    image: httpd
+    volumes:
+      - ./httpd.conf:/usr/local/apache2/conf/httpd.conf
+

@@ -1,0 +1,19 @@
+receivers:
+  ## Configuration for Apache Receiver
+  ## The Apache receiver fetches stats from a Apache Web Server instance using the server-status?auto endpoint.
+  ## ref: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/apachereceiver
+  apache:
+    endpoint: "http://apache/server-status?auto"
+
+service:
+  pipelines:
+    metrics/apache:
+      receivers:
+        - apache
+      processors:
+        - memory_limiter
+        - sumologic_schema
+        - transform/add_sourcetype
+        - batch
+      exporters:
+        - sumologic
