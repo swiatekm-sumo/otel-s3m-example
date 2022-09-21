@@ -34,3 +34,9 @@ That's it, you should start seeing metrics appear on the newly created `otel-s3m
 
 The configuration contains an additional exporter than will save all exported data to a local `output.json` file.
 This is intended to make expertimentation easier, and won't be present in end-user configurations.
+
+## Searching for data in Sumo
+
+OTC Distro instance has set `myfield = myvalue` agent tag so data can be searched using it.
+
+Also the `_sourceType` is being set with value from the `instrumentation_scope.name` so it can be searched using that tag as well.
