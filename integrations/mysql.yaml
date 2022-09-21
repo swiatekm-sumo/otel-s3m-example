@@ -20,3 +20,4 @@ service:
         - batch
       exporters:
         - sumologic
+        - file

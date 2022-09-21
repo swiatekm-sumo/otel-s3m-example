@@ -29,3 +29,8 @@ docker-compose up
 ```
 
 That's it, you should start seeing metrics appear on the newly created `otel-s3m-example` collector.
+
+## Inspecting the data
+
+The configuration contains an additional exporter than will save all exported data to a local `output.json` file.
+This is intended to make expertimentation easier, and won't be present in end-user configurations.

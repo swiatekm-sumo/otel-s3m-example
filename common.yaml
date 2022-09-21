@@ -65,6 +65,8 @@ exporters:
   ## This exporter supports sending logs, metrics and traces data to Sumo Logic.
   ## ref: https://github.com/SumoLogic/sumologic-otel-collector/tree/main/pkg/exporter/sumologicexporter
   sumologic:
+  file:
+    path: /etc/otel/output.json
 
 processors:
   ## Configuration for Sumo Logic Schema Processor
@@ -135,6 +137,7 @@ service:
         - batch
       exporters:
         - sumologic
+        - file
     logs/syslog:
       receivers:
         - filelog/syslog
@@ -147,6 +150,7 @@ service:
         - batch
       exporters:
         - sumologic
+        - file
     logs/dkg:
       receivers:
         - filelog/dpkg
@@ -158,3 +162,4 @@ service:
         - batch
       exporters:
         - sumologic
+        - file
