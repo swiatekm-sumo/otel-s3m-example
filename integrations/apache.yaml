@@ -4,6 +4,24 @@ receivers:
   ## ref: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/apachereceiver
   apache:
     endpoint: "http://apache/server-status?auto"
+  
+  ## Configuration for Filelog Receiver
+  ## Tails and parses logs from files
+  ## This instance is configured to handle Apache logs
+  ## ref: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver
+  filelog/apache:
+    start_at: beginning
+    include_file_path_resolved: true
+    include:
+      - /var/log/httpd/*
+      - /var/log/apache2/*
+
+processors:
+  ## Add the _sourceType attribute to the logs
+  transform/apache_logs_add_sourcetype:
+    logs:
+      queries:
+        - set(resource.attributes["_sourceType"], "otelcol/filelog/apache")
 
 service:
   pipelines:
@@ -14,6 +32,17 @@ service:
         - memory_limiter
         - sumologic_schema
         - transform/add_sourcetype
+        - batch
+      exporters:
+        - sumologic
+        - file
+    logs/apache:
+      receivers:
+        - filelog/apache
+      processors:
+        - memory_limiter
+        - sumologic_schema
+        - transform/apache_logs_add_sourcetype
         - batch
       exporters:
         - sumologic

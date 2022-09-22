@@ -8,6 +8,7 @@ services:
       - MYSQL_PASSWORD=otel
     volumes:
       - .:/etc/otel
+      - apache_logs:/var/log/httpd
     command:
       - --config
       - /etc/otel/common.yaml
@@ -27,4 +28,8 @@ services:
     image: httpd
     volumes:
       - ./httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - apache_logs:/var/log/httpd
 
+volumes:
+  apache_logs:
+  mysql_logs:
