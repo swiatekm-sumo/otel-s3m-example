@@ -1,6 +1,7 @@
 services:
   otel:
     image: public.ecr.aws/sumologic/sumologic-otel-collector-dev
+    user: "0:0"  # run as root so we can read mysql logs, which are written with a 640 chmod
     environment:
       - FILE_STORAGE=/tmp
       - INSTALL_TOKEN=${INSTALL_TOKEN}
@@ -9,6 +10,7 @@ services:
     volumes:
       - .:/etc/otel
       - apache_logs:/var/log/httpd
+      - mysql_logs:/var/log/mysql
     command:
       - --config
       - /etc/otel/common.yaml
@@ -19,11 +21,15 @@ services:
       - apache
   mysql:
     image: mysql
+    command:
+      - --log-error=/var/log/mysqld.log
     environment:
       - MYSQL_USER=otel
       - MYSQL_PASSWORD=otel
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_ROOT_HOST=0.0.0.0
+    volumes:
+      - mysql_logs:/var/log
   apache:
     image: httpd
     volumes:

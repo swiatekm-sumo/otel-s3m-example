@@ -8,6 +8,24 @@ receivers:
     password: $MYSQL_PASSWORD
     collection_interval: 10s
 
+  ## Configuration for Filelog Receiver
+  ## Tails and parses logs from files
+  ## This instance is configured to handle MySQL logs
+  ## ref: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver
+  filelog/mysql:
+    start_at: beginning
+    include_file_path_resolved: true
+    include:
+      - /var/log/mysql/*
+      - /var/log/mysqld.log
+
+processors:
+  ## Add the _sourceType attribute to the logs
+  transform/mysql_logs_add_sourcetype:
+    logs:
+      queries:
+        - set(resource.attributes["_sourceType"], "otelcol/filelog/mysql")
+
 service:
   pipelines:
     metrics/mysql:
@@ -17,6 +35,17 @@ service:
         - memory_limiter
         - sumologic_schema
         - transform/add_sourcetype
+        - batch
+      exporters:
+        - sumologic
+        - file
+    logs/mysql:
+      receivers:
+        - filelog/mysql
+      processors:
+        - memory_limiter
+        - sumologic_schema
+        - transform/mysql_logs_add_sourcetype
         - batch
       exporters:
         - sumologic
