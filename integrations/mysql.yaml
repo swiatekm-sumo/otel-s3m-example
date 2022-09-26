@@ -1,12 +1,15 @@
 receivers:
   ## Configuration for MySQL Receiver
   ## The MySQL receiver queries MySQL's global status and InnoDB tables.
-  ## ref: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/mysqlreceiver
-  mysql:
-    endpoint: mysql:3306
-    username: otel
-    password: $MYSQL_PASSWORD
-    collection_interval: 10s
+  ## ref: https://github.com/influxdata/telegraf/blob/release-1.23/plugins/inputs/mysql/README.md#mysql-input-plugin
+  telegraf/mysql:
+    separate_field: false
+    agent_config: |
+      [agent]
+        interval = "10s"
+        flush_interval = "30s"
+      [[inputs.mysql]]
+        servers = ["otel:$MYSQL_PASSWORD@tcp(mysql:3306)/"]
 
   ## Configuration for Filelog Receiver
   ## Tails and parses logs from files
@@ -30,7 +33,7 @@ service:
   pipelines:
     metrics/mysql:
       receivers:
-        - mysql
+        - telegraf/mysql
       processors:
         - memory_limiter
         - sumologic_schema
