@@ -1,10 +1,16 @@
 receivers:
   ## Configuration for Apache Receiver
   ## The Apache receiver fetches stats from a Apache Web Server instance using the server-status?auto endpoint.
-  ## ref: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/apachereceiver
-  apache:
-    endpoint: "http://apache/server-status?auto"
-  
+  ## ref: https://github.com/influxdata/telegraf/blob/release-1.23/plugins/inputs/apache/README.md#apache-input-plugin
+  telegraf/apache:
+    separate_field: false
+    agent_config: |
+      [agent]
+        interval = "10s"
+        flush_interval = "30s"
+      [[inputs.apache]]
+        urls = "http://apache/server-status?auto"
+
   ## Configuration for Filelog Receiver
   ## Tails and parses logs from files
   ## This instance is configured to handle Apache logs
@@ -27,7 +33,7 @@ service:
   pipelines:
     metrics/apache:
       receivers:
-        - apache
+        - telegraf/apache
       processors:
         - memory_limiter
         - sumologic_schema
