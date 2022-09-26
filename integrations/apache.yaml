@@ -9,7 +9,7 @@ receivers:
         interval = "10s"
         flush_interval = "30s"
       [[inputs.apache]]
-        urls = "http://apache/server-status?auto"
+        urls = ["http://apache/server-status?auto"]
 
   ## Configuration for Filelog Receiver
   ## Tails and parses logs from files
